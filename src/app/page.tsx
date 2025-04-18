@@ -1,103 +1,252 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+import {useState} from 'react';
+import {
+    Box,
+    Button,
+    Container,
+    Flex,
+    Heading,
+    HStack,
+    Icon,
+    SimpleGrid,
+    Text,
+    useColorModeValue,
+    VStack
+} from '@chakra-ui/react';
+import {FaComments, FaCreditCard, FaHandshake, FaSearch} from 'react-icons/fa';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
+import ProjectCard from '@/components/projects/ProjectCard';
+import FreelancerCard from '@/components/freelancers/FreelancerCard';
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+// 임시 데이터
+const featuredProjects = [
+    {
+        id: 1,
+        title: '모바일 앱 UI/UX 디자인',
+        budget: '2,000,000원',
+        deadline: '2주',
+        skills: ['Figma', 'Adobe XD', 'UI/UX'],
+        clientName: '테크스타트',
+    },
+    {
+        id: 2,
+        title: '웹사이트 백엔드 개발',
+        budget: '3,500,000원',
+        deadline: '1개월',
+        skills: ['Java', 'Spring Boot', 'MySQL'],
+        clientName: '이커머스 코리아',
+    },
+    {
+        id: 3,
+        title: '마케팅 콘텐츠 제작',
+        budget: '1,500,000원',
+        deadline: '3주',
+        skills: ['콘텐츠 마케팅', '카피라이팅'],
+        clientName: '브랜드 솔루션즈',
+    },
+];
+
+const topFreelancers = [
+    {
+        id: 1,
+        name: '김디자이너',
+        title: 'UI/UX 디자이너',
+        rating: 4.9,
+        skills: ['Figma', 'Adobe XD', 'UI/UX'],
+        completedProjects: 32,
+    },
+    {
+        id: 2,
+        name: '박개발자',
+        title: '풀스택 개발자',
+        rating: 4.8,
+        skills: ['React', 'Node.js', 'TypeScript'],
+        completedProjects: 28,
+    },
+    {
+        id: 3,
+        name: '이마케터',
+        title: '디지털 마케터',
+        rating: 4.7,
+        skills: ['SEO', 'Google Ads', '콘텐츠 마케팅'],
+        completedProjects: 45,
+    },
+];
+
+const HomePage = () => {
+    const bgColor = useColorModeValue('gray.50', 'gray.900');
+    const [userType, setUserType] = useState<'client' | 'freelancer' | null>(null);
+
+    return (
+        <Box bg={bgColor} minH="100vh">
+            <Header/>
+
+            {/* 히어로 섹션 */}
+            <Box
+                bg="blue.600"
+                color="white"
+                py={20}
+                backgroundImage="linear-gradient(135deg, #3182CE 0%, #4FD1C5 100%)"
+            >
+                <Container maxW="container.xl">
+                    <VStack spacing={6} align="center" textAlign="center">
+                        <Heading as="h1" size="2xl" fontWeight="bold">
+                            FreeWave - 실시간 프리랜서 매칭 & 협업 플랫폼
+                        </Heading>
+                        <Text fontSize="xl" maxW="container.md">
+                            프로젝트를 등록하고 실시간으로 프리랜서와 연결되어 협업까지 한 번에 해결하세요.
+                            실시간 견적, 채팅, 결제까지 모든 과정이 원활하게 이루어집니다.
+                        </Text>
+                        <HStack spacing={4} pt={6}>
+                            <Button
+                                size="lg"
+                                colorScheme="whiteAlpha"
+                                onClick={() => setUserType('client')}
+                            >
+                                프로젝트 등록하기
+                            </Button>
+                            <Button
+                                size="lg"
+                                variant="outline"
+                                colorScheme="whiteAlpha"
+                                onClick={() => setUserType('freelancer')}
+                            >
+                                프리랜서로 시작하기
+                            </Button>
+                        </HStack>
+                    </VStack>
+                </Container>
+            </Box>
+
+            {/* 주요 기능 섹션 */}
+            <Box py={16}>
+                <Container maxW="container.xl">
+                    <VStack spacing={12}>
+                        <Heading as="h2" size="xl" textAlign="center">
+                            FreeWave의 주요 기능
+                        </Heading>
+
+                        <SimpleGrid columns={{base: 1, md: 2, lg: 4}} spacing={10}>
+                            <FeatureCard
+                                icon={FaSearch}
+                                title="간편한 프로젝트 등록"
+                                description="몇 분 안에 프로젝트를 등록하고 실시간으로 견적을 받아보세요."
+                            />
+                            <FeatureCard
+                                icon={FaHandshake}
+                                title="실시간 매칭"
+                                description="적합한 프리랜서와 즉시 연결되어 시간을 절약하세요."
+                            />
+                            <FeatureCard
+                                icon={FaComments}
+                                title="실시간 협업"
+                                description="내장된 채팅 시스템으로 원활한 소통이 가능합니다."
+                            />
+                            <FeatureCard
+                                icon={FaCreditCard}
+                                title="안전한 결제"
+                                description="프로젝트 완료 후 안전하게 결제와 정산이 이루어집니다."
+                            />
+                        </SimpleGrid>
+                    </VStack>
+                </Container>
+            </Box>
+
+            {/* 인기 프로젝트 섹션 */}
+            <Box py={16} bg="gray.100">
+                <Container maxW="container.xl">
+                    <VStack spacing={8} align="stretch">
+                        <Flex justify="space-between" align="center">
+                            <Heading as="h2" size="xl">
+                                인기 프로젝트
+                            </Heading>
+                            <Button colorScheme="blue" variant="outline">
+                                모든 프로젝트 보기
+                            </Button>
+                        </Flex>
+
+                        <SimpleGrid columns={{base: 1, md: 2, lg: 3}} spacing={8}>
+                            {featuredProjects.map(project => (
+                                <ProjectCard key={project.id} project={project}/>
+                            ))}
+                        </SimpleGrid>
+                    </VStack>
+                </Container>
+            </Box>
+
+            {/* 인기 프리랜서 섹션 */}
+            <Box py={16}>
+                <Container maxW="container.xl">
+                    <VStack spacing={8} align="stretch">
+                        <Flex justify="space-between" align="center">
+                            <Heading as="h2" size="xl">
+                                인기 프리랜서
+                            </Heading>
+                            <Button colorScheme="blue" variant="outline">
+                                모든 프리랜서 보기
+                            </Button>
+                        </Flex>
+
+                        <SimpleGrid columns={{base: 1, md: 2, lg: 3}} spacing={8}>
+                            {topFreelancers.map(freelancer => (
+                                <FreelancerCard key={freelancer.id} freelancer={freelancer}/>
+                            ))}
+                        </SimpleGrid>
+                    </VStack>
+                </Container>
+            </Box>
+
+            {/* CTA 섹션 */}
+            <Box py={20} bg="blue.600" color="white">
+                <Container maxW="container.xl">
+                    <VStack spacing={8} textAlign="center">
+                        <Heading as="h2" size="xl">
+                            지금 바로 FreeWave와 함께 시작하세요
+                        </Heading>
+                        <Text fontSize="lg" maxW="container.md">
+                            프리랜서와 클라이언트를 위한 최적의 플랫폼에서 여러분의 가능성을 펼쳐보세요.
+                            실시간 매칭부터 협업, 결제까지 모든 과정이 원활하게 이루어집니다.
+                        </Text>
+                        <HStack spacing={4} pt={4}>
+                            <Button size="lg" colorScheme="whiteAlpha">
+                                무료로 시작하기
+                            </Button>
+                            <Button size="lg" variant="outline" colorScheme="whiteAlpha">
+                                더 알아보기
+                            </Button>
+                        </HStack>
+                    </VStack>
+                </Container>
+            </Box>
+
+            <Footer/>
+        </Box>
+    );
+};
+
+// 기능 카드 컴포넌트
+const FeatureCard = ({icon, title, description}: { icon: any; title: string; description: string }) => {
+    return (
+        <VStack
+            spacing={4}
+            p={6}
+            bg="white"
+            boxShadow="md"
+            borderRadius="lg"
+            align="center"
+            textAlign="center"
+            transition="transform 0.3s"
+            _hover={{transform: 'translateY(-5px)'}}
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
-}
+            <Icon as={icon} boxSize={10} color="blue.500"/>
+            <Heading as="h3" size="md">
+                {title}
+            </Heading>
+            <Text color="gray.600">{description}</Text>
+        </VStack>
+    );
+};
+
+export default HomePage;
