@@ -1,7 +1,8 @@
 'use client';
 
-import {useState} from 'react';
+import {useRouter} from 'next/navigation';
 import {
+    Avatar,
     Box,
     Button,
     Container,
@@ -13,14 +14,25 @@ import {
     MenuButton,
     MenuItem,
     MenuList,
+    Text,
     useDisclosure
 } from '@chakra-ui/react';
-import {FaBars, FaBell, FaUser} from 'react-icons/fa';
+import {FaBars, FaBell, FaClipboardList, FaCog, FaComments, FaSignOutAlt, FaUserCircle} from 'react-icons/fa';
 import Link from 'next/link';
+import {useAuth} from '@/contexts/AuthContext';
 
 const Header = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const {isAuthenticated, user, logout} = useAuth();
+    const router = useRouter();
     const {isOpen, onOpen, onClose} = useDisclosure();
+
+    const handleLoginClick = () => {
+        router.push('/login');
+    };
+
+    const handleSignupClick = () => {
+        router.push('/signup');
+    };
 
     return (
         <Box as="header" bg="white" boxShadow="sm" position="sticky" top={0} zIndex={10}>
@@ -30,8 +42,13 @@ const Header = () => {
                     <Link href="/" passHref>
                         <Box cursor="pointer">
                             <Flex align="center">
-                                <Image src="/logo.svg" alt="FreeWave Logo" h="40px"
-                                       fallbackSrc="https://via.placeholder.com/150x50?text=FreeWave"/>
+                                <Image
+                                    src="/logo.svg"
+                                    alt="FreeWave Logo"
+                                    h="40px"
+                                    w="auto"
+                                    fallbackSrc="./free_wave_logo.png"
+                                />
                             </Flex>
                         </Box>
                     </Link>
@@ -49,9 +66,9 @@ const Header = () => {
                         </Link>
                     </HStack>
 
-                    {/* 로그인/회원가입 버튼 */}
+                    {/* 로그인/회원가입 버튼 또는 사용자 메뉴 */}
                     <HStack spacing={4}>
-                        {isLoggedIn ? (
+                        {isAuthenticated ? (
                             <>
                                 <IconButton
                                     aria-label="알림"
@@ -61,27 +78,34 @@ const Header = () => {
                                 />
                                 <Menu>
                                     <MenuButton
-                                        as={IconButton}
-                                        aria-label="사용자 메뉴"
-                                        icon={<FaUser/>}
-                                        variant="ghost"
-                                        colorScheme="blue"
-                                    />
+                                        as={Flex}
+                                        align="center"
+                                        cursor="pointer"
+                                        p={1}
+                                        borderRadius="md"
+                                        _hover={{bg: 'gray.100'}}
+                                    >
+                                        <HStack>
+                                            <Avatar size="sm" name={user?.nickname}
+                                                    src={`https://i.pravatar.cc/150?u=${user?.userId}`}/>
+                                            <Text display={{base: 'none', md: 'block'}}>{user?.nickname}</Text>
+                                        </HStack>
+                                    </MenuButton>
                                     <MenuList>
-                                        <MenuItem>프로필</MenuItem>
-                                        <MenuItem>내 프로젝트</MenuItem>
-                                        <MenuItem>메시지</MenuItem>
-                                        <MenuItem>설정</MenuItem>
-                                        <MenuItem onClick={() => setIsLoggedIn(false)}>로그아웃</MenuItem>
+                                        <MenuItem icon={<FaUserCircle/>}>프로필</MenuItem>
+                                        <MenuItem icon={<FaClipboardList/>}>내 프로젝트</MenuItem>
+                                        <MenuItem icon={<FaComments/>}>메시지</MenuItem>
+                                        <MenuItem icon={<FaCog/>}>설정</MenuItem>
+                                        <MenuItem icon={<FaSignOutAlt/>} onClick={logout}>로그아웃</MenuItem>
                                     </MenuList>
                                 </Menu>
                             </>
                         ) : (
                             <>
-                                <Button variant="ghost" colorScheme="blue" onClick={() => setIsLoggedIn(true)}>
+                                <Button variant="ghost" colorScheme="blue" onClick={handleLoginClick}>
                                     로그인
                                 </Button>
-                                <Button colorScheme="blue">회원가입</Button>
+                                <Button colorScheme="blue" onClick={handleSignupClick}>회원가입</Button>
                             </>
                         )}
 
