@@ -24,7 +24,7 @@ import {
 import {FaArrowLeft} from 'react-icons/fa';
 import {useAuth} from '@/contexts/AuthContext';
 
-const SignupPage = () => {
+const Page = () => {
     const router = useRouter();
     const toast = useToast();
     const [isLoading, setIsLoading] = useState(false);
@@ -37,6 +37,7 @@ const SignupPage = () => {
         confirmPassword: '',
         nickname: '',
         userRole: 'ROLE_CLIENT' as 'ROLE_CLIENT' | 'ROLE_FREELANCER',
+        imageUrl: 'https://freewave.s3.ap-northeast-2.amazonaws.com/default+profile.png',
         agreeTerms: false,
     });
 
@@ -136,6 +137,7 @@ const SignupPage = () => {
                 password: formData.password,
                 userRole: formData.userRole,
                 nickname: formData.nickname,
+                imageUrl: formData.imageUrl
             });
 
             toast({
@@ -289,4 +291,4 @@ const SignupPage = () => {
     );
 };
 
-export default SignupPage;
+export default Page;

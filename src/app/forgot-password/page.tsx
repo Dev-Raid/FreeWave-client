@@ -20,7 +20,7 @@ import {
 } from '@chakra-ui/react';
 import {FaArrowLeft} from 'react-icons/fa';
 
-const ForgotPasswordPage = () => {
+const Page = () => {
     const toast = useToast();
     const [email, setEmail] = useState('');
     const [error, setError] = useState('');
@@ -151,4 +151,4 @@ const ForgotPasswordPage = () => {
     );
 };
 
-export default ForgotPasswordPage;
+export default Page;
