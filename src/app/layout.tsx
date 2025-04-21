@@ -3,6 +3,7 @@
 import {ChakraProvider} from '@chakra-ui/react';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import {AuthProvider} from '@/contexts/AuthContext';
+import {ProfileProvider} from '@/contexts/ProfileContext';
 import PersistLogin from '@/components/auth/PersistLogin';
 import './globals.css';
 
@@ -19,9 +20,11 @@ export default function RootLayout({
         <QueryClientProvider client={queryClient}>
             <ChakraProvider>
                 <AuthProvider>
-                    <PersistLogin>
-                        {children}
-                    </PersistLogin>
+                    <ProfileProvider>
+                        <PersistLogin>
+                            {children}
+                        </PersistLogin>
+                    </ProfileProvider>
                 </AuthProvider>
             </ChakraProvider>
         </QueryClientProvider>

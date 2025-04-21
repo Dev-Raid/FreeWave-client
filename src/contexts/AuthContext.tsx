@@ -9,6 +9,8 @@ interface User {
     userId: string;
     nickname: string;
     userRole: 'ROLE_CLIENT' | 'ROLE_FREELANCER';
+    imageUrl: string;
+    email: string;
 }
 
 // 인증 컨텍스트 타입 정의
@@ -27,6 +29,7 @@ interface SignupData {
     password: string;
     nickname: string;
     userRole: 'ROLE_CLIENT' | 'ROLE_FREELANCER';
+    imageUrl: string;
 }
 
 // 기본값으로 사용할 빈 컨텍스트 생성
@@ -68,7 +71,7 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
 
                 // 사용자 정보 가져오기
                 try {
-                    const response = await api.get('/api/v1/user/me', {withCredentials: true});
+                    const response = await api.get('/api/v1/users/me', {withCredentials: true});
 
                     if (response.data) {
                         setUser(response.data);
@@ -135,7 +138,7 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
             } else {
                 // 사용자 정보가 응답에 없는 경우 별도로 요청
                 // withCredentials: true를 설정하여 쿠키를 함께 전송
-                const userResponse = await api.get('/api/v1/user/me', {withCredentials: true});
+                const userResponse = await api.get('/api/v1/users/me', {withCredentials: true});
                 setUser(userResponse.data);
             }
 
@@ -160,6 +163,7 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
                 password: userData.password,
                 userRole: userData.userRole,
                 nickname: userData.nickname,
+                imageUrl: userData.imageUrl
             });
 
             return response.data;

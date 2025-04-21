@@ -23,7 +23,7 @@ import {
 import {FaArrowLeft, FaGoogle, FaGithub} from 'react-icons/fa';
 import {useAuth} from '@/contexts/AuthContext';
 
-const LoginPage = () => {
+const Page = () => {
     const router = useRouter();
     const toast = useToast();
     const [isLoading, setIsLoading] = useState(false);
@@ -252,4 +252,4 @@ const LoginPage = () => {
     );
 };
 
-export default LoginPage;
+export default Page;

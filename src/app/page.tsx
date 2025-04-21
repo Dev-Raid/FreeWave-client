@@ -2,17 +2,8 @@
 
 import {useState} from 'react';
 import {
-    Box,
-    Button,
-    Container,
-    Flex,
-    Heading,
-    Text,
-    VStack,
-    HStack,
-    SimpleGrid,
-    useColorMode,
-    Icon
+    Box, Button, Container, Flex, Heading, Text, VStack, HStack,
+    SimpleGrid, useColorMode, Icon
 } from '@chakra-ui/react';
 import {FaSearch, FaHandshake, FaComments, FaCreditCard} from 'react-icons/fa';
 import {useRouter} from 'next/navigation';
@@ -21,6 +12,7 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import ProjectCard from '@/components/projects/ProjectCard';
 import FreelancerCard from '@/components/freelancers/FreelancerCard';
+import {IconType} from "react-icons";
 
 // 임시 데이터 - 프로젝트
 const featuredProjects = [
@@ -343,7 +335,7 @@ const HomePage = () => {
 };
 
 // 기능 카드 컴포넌트
-const FeatureCard = ({icon, title, description}: { icon: any; title: string; description: string }) => {
+const FeatureCard = ({icon, title, description}: { icon: IconType; title: string; description: string }) => {
     return (
         <VStack
             gap={4}

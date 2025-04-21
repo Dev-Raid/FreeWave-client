@@ -2,29 +2,18 @@
 
 import {useRouter} from 'next/navigation';
 import {
-    Avatar,
-    Box,
-    Button,
-    Container,
-    Flex,
-    HStack,
-    IconButton,
-    Image,
-    Menu,
-    MenuButton,
-    MenuItem,
-    MenuList,
-    Text,
-    useDisclosure
+    Box, Button, Container, Flex, HStack, IconButton, Image, Menu, MenuButton,
+    MenuItem, MenuList, Text, useDisclosure
 } from '@chakra-ui/react';
 import {FaBars, FaBell, FaClipboardList, FaCog, FaComments, FaSignOutAlt, FaUserCircle} from 'react-icons/fa';
 import Link from 'next/link';
 import {useAuth} from '@/contexts/AuthContext';
+import CustomAvatar from "@/components/common/CustomAvatar";
 
 const Header = () => {
     const {isAuthenticated, user, logout} = useAuth();
     const router = useRouter();
-    const {isOpen, onOpen, onClose} = useDisclosure();
+    const {onOpen} = useDisclosure();
 
     const handleLoginClick = () => {
         router.push('/login');
@@ -32,6 +21,15 @@ const Header = () => {
 
     const handleSignupClick = () => {
         router.push('/signup');
+    };
+
+    const handleMyPageClick = () => {
+        router.push('/mypage');
+    };
+
+    // 이미지 오류 처리 함수
+    const handleImageError = () => {
+        console.log('프로필 이미지 로드 실패');
     };
 
     return (
@@ -86,16 +84,23 @@ const Header = () => {
                                         _hover={{bg: 'gray.100'}}
                                     >
                                         <HStack>
-                                            <Avatar size="sm" name={user?.nickname}
-                                                    src={`https://i.pravatar.cc/150?u=${user?.userId}`}/>
+                                            <CustomAvatar
+                                                size="sm"
+                                                name={user?.nickname}
+                                                src={user?.imageUrl}
+                                                onError={handleImageError}
+                                            />
                                             <Text display={{base: 'none', md: 'block'}}>{user?.nickname}</Text>
                                         </HStack>
                                     </MenuButton>
                                     <MenuList>
-                                        <MenuItem icon={<FaUserCircle/>}>프로필</MenuItem>
-                                        <MenuItem icon={<FaClipboardList/>}>내 프로젝트</MenuItem>
-                                        <MenuItem icon={<FaComments/>}>메시지</MenuItem>
-                                        <MenuItem icon={<FaCog/>}>설정</MenuItem>
+                                        <MenuItem icon={<FaUserCircle/>} onClick={handleMyPageClick}>마이페이지</MenuItem>
+                                        <MenuItem icon={<FaClipboardList/>}
+                                                  onClick={() => router.push('/mypage?tab=1')}>내 프로젝트</MenuItem>
+                                        <MenuItem icon={<FaComments/>}
+                                                  onClick={() => router.push('/mypage?tab=2')}>메시지</MenuItem>
+                                        <MenuItem icon={<FaCog/>}
+                                                  onClick={() => router.push('/mypage?tab=4')}>설정</MenuItem>
                                         <MenuItem icon={<FaSignOutAlt/>} onClick={logout}>로그아웃</MenuItem>
                                     </MenuList>
                                 </Menu>
