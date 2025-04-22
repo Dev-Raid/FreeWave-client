@@ -343,9 +343,9 @@ const MyPage: React.FC = () => {
         profileImage: profile?.imageUrl || ''
     });
 
-    // 이력서 상태
+    // 이력서 상태 초기화 부분 수정
     const [resume, setResume] = useState<Resume>({
-        bio: '8년 경력의 UI/UX 디자이너이자 프론트엔드 개발자입니다. 사용자 중심의 디자인과 최신 기술을 활용한 개발로 최상의 결과물을 제공합니다. 핀테크, 이커머스 분야에 전문성이 있습니다.',
+        bio: '', // 초기값은 빈 문자열로 설정
         skills: ['React', 'TypeScript', 'UI/UX', 'Figma', 'Next.js'],
         newSkill: '',
         portfolios: portfolioItems,
@@ -357,6 +357,16 @@ const MyPage: React.FC = () => {
             tags: []
         }
     });
+
+    // profile 데이터가 변경될 때 resume 상태 업데이트
+    useEffect(() => {
+        if (profile) {
+            setResume(prev => ({
+                ...prev,
+                bio: profile.bio || prev.bio
+            }));
+        }
+    }, [profile]);
 
     // PDF 변경 핸들러
     const handlePDFChange = (file: File): void => {
@@ -398,10 +408,19 @@ const MyPage: React.FC = () => {
 
     // 사용자가 인증된 상태이고 프로필 정보가 없을 때 프로필 정보 로드
     useEffect(() => {
-        if (isAuthenticated && !profile) {
+        // 요청 트래커 변수
+        let isLoading = false;
+
+        if (isAuthenticated && !profile && !isLoading) {
+            isLoading = true;
             refreshProfile();
         }
-    }, [isAuthenticated, profile, refreshProfile]);
+
+        // 클린업 함수로 요청 트래커 관리
+        return () => {
+            isLoading = true; // 컴포넌트가 리렌더링되면 이전 요청을 무시
+        };
+    }, [isAuthenticated, profile]);
 
     // 탭 변경 핸들러
     const handleTabChange = (index: number): void => {
@@ -474,10 +493,11 @@ const MyPage: React.FC = () => {
 
     // 이력서 Bio 변경 핸들러
     const handleBioChange = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
-        setResume({
-            ...resume,
-            bio: e.target.value
-        });
+        const newBio = e.target.value;
+        setResume(prev => ({
+            ...prev,
+            bio: newBio
+        }));
     };
 
     // 이력서 스킬 변경 핸들러

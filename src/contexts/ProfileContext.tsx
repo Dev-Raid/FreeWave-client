@@ -11,6 +11,7 @@ export interface Profile {
     userRole: 'ROLE_CLIENT' | 'ROLE_FREELANCER';
     imageUrl: string;
     email: string;
+    bio?: string; // bio 필드 추가
 }
 
 // 프로필 업데이트 데이터 타입 정의
@@ -26,8 +27,8 @@ interface ProfileContextType {
     isLoading: boolean;
     updateProfile: (data: ProfileUpdateData) => Promise<void>;
     uploadProfileImage: (file: File) => Promise<void>;
-    refreshProfile: () => Promise<void>;
-    updateBio: (bio: string) => Promise<any>; // 자기소개 업데이트 함수 추가
+    refreshProfile: () => Promise<Profile | null>;
+    updateBio: (bio: string) => Promise<any>;
 }
 
 // 기본값으로 사용할 빈 컨텍스트 생성
@@ -38,8 +39,7 @@ const ProfileContext = createContext<ProfileContextType>({
     },
     uploadProfileImage: async () => {
     },
-    refreshProfile: async () => {
-    },
+    refreshProfile: async () => null,
     updateBio: async () => {
     },
 });
@@ -62,7 +62,7 @@ export const ProfileProvider = ({children}: { children: ReactNode }) => {
             const token = localStorage.getItem('access_token');
             if (!token) {
                 setProfile(null);
-                return;
+                return null;
             }
 
             // 사용자 프로필 정보 가져오기
@@ -70,7 +70,9 @@ export const ProfileProvider = ({children}: { children: ReactNode }) => {
 
             if (response.data) {
                 setProfile(response.data);
+                return response.data;
             }
+            return null;
         } catch (error) {
             console.error('프로필 정보 로드 오류:', error);
             toast({
@@ -79,6 +81,7 @@ export const ProfileProvider = ({children}: { children: ReactNode }) => {
                 duration: 3000,
                 isClosable: true,
             });
+            return null;
         } finally {
             setIsLoading(false);
         }
@@ -182,13 +185,6 @@ export const ProfileProvider = ({children}: { children: ReactNode }) => {
                 setProfile(prevProfile => {
                     if (!prevProfile) return null;
                     return {...prevProfile, bio};
-                });
-
-                toast({
-                    title: '자기소개가 성공적으로 업데이트되었습니다.',
-                    status: 'success',
-                    duration: 3000,
-                    isClosable: true,
                 });
 
                 return response.data;

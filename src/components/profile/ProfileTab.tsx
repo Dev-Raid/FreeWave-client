@@ -11,6 +11,7 @@ interface User {
     userRole?: string;
     email?: string;
     profileImage?: string;
+    bio?: string;
 }
 
 interface ProfileTabProps {
@@ -22,12 +23,18 @@ interface ProfileTabProps {
 }
 
 const ProfileTab: React.FC<ProfileTabProps> = ({user, resume, onBioChange}) => {
+    // 백엔드에서 받아온 user.bio를 우선적으로 사용하고, 없으면 로컬 상태인 resume.bio 사용
+    const bioContent = user?.bio !== undefined ? user.bio : resume.bio;
+
     return (
         <SimpleGrid columns={{base: 1, lg: 3}} spacing={8}>
             <Box gridColumn="span 2">
                 <VStack align="stretch" spacing={6}>
                     {/* 자기소개 */}
-                    <BioSection bio={resume.bio} onBioChange={onBioChange}/>
+                    <BioSection
+                        bio={bioContent}
+                        onBioChange={onBioChange}
+                    />
 
                     {user?.userRole === 'ROLE_CLIENT' && (
                         <>

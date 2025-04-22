@@ -1,7 +1,7 @@
 'use client';
 
 import React, {useState, useEffect} from 'react';
-import {Box, Text} from '@chakra-ui/react';
+import {Box} from '@chakra-ui/react';
 
 interface CustomAvatarProps {
     name?: string;
@@ -61,16 +61,6 @@ const CustomAvatar: React.FC<CustomAvatarProps> = ({
 
         img.src = src;
     }, [src, onError]);
-
-    // 이니셜 생성
-    const getInitials = () => {
-        if (!name) return '';
-        return name.split(' ')
-            .map(part => part[0])
-            .slice(0, 2)
-            .join('')
-            .toUpperCase();
-    };
 
     return (
         <Box
