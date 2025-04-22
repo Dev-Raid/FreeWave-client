@@ -40,7 +40,10 @@ const ResumeTab: React.FC<ResumeTabProps> = ({
             <GridItem colSpan={{base: 1, lg: 2}}>
                 <VStack align="stretch" spacing={6}>
                     {/* 자기소개 (Bio) */}
-                    <BioSection bio={resume.bio} onBioChange={onBioChange}/>
+                    <BioSection
+                        bio={resume.bio}
+                        onBioChange={onBioChange}
+                    />
 
                     {/* 보유 기술 */}
                     <Box bg="white" p={6} borderRadius="md" boxShadow="sm">
