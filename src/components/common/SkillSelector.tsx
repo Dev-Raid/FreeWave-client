@@ -4,7 +4,7 @@ import React, {useState, useRef, useEffect} from 'react';
 import {
     Box, Input, InputGroup, InputRightElement, Icon, Flex, Text,
     Checkbox, Button, Tag, IconButton, VStack, Divider,
-    useOutsideClick, Spinner,
+    useOutsideClick, Spinner, TagCloseButton, TagLabel,
 } from '@chakra-ui/react';
 import {FaSearch, FaTrash} from 'react-icons/fa';
 
@@ -12,6 +12,7 @@ import {FaSearch, FaTrash} from 'react-icons/fa';
 interface SkillSelectorProps {
     selectedSkills: string[];
     onSkillsChange: (skills: string[]) => void;
+    onDeleteSkill?: (skill: string) => void;
     isLoading?: boolean;
 }
 
@@ -256,6 +257,7 @@ const techStackList: TechStackItem[] = [
 const SkillSelector: React.FC<SkillSelectorProps> = ({
                                                          selectedSkills,
                                                          onSkillsChange,
+                                                         onDeleteSkill,
                                                          isLoading = false
                                                      }) => {
     const [searchTerm, setSearchTerm] = useState<string>('');
@@ -338,6 +340,22 @@ const SkillSelector: React.FC<SkillSelectorProps> = ({
         }
     };
 
+    // 개별 기술 스택 삭제 핸들러
+    const handleDeleteSkill = (skill: string) => {
+        if (onDeleteSkill) {
+            onDeleteSkill(skill);
+        } else {
+            // onDeleteSkill이 제공되지 않은 경우 기본 동작
+            const newSkills = selectedSkills.filter(s => s !== skill);
+            onSkillsChange(newSkills);
+        }
+    };
+
+    // 전체 기술 스택 삭제 핸들러
+    const handleClearAllSkills = () => {
+        onSkillsChange([]);
+    };
+
     return (
         <Box position="relative" ref={dropdownRef}>
             <InputGroup>
@@ -358,6 +376,36 @@ const SkillSelector: React.FC<SkillSelectorProps> = ({
                     )}
                 </InputRightElement>
             </InputGroup>
+
+            {/* 선택된 기술 스택 관리 섹션 */}
+            {selectedSkills.length > 0 && (
+                <Box mt={4}>
+                    <Flex justifyContent="space-between" alignItems="center" width="100%" mb={2}>
+                        <Text fontWeight="bold">선택된 기술 스택 ({selectedSkills.length})</Text>
+                    </Flex>
+                    <Flex flexWrap="wrap" mt={2}>
+                        {selectedSkills.map((skillName, index) => {
+                            const displayName = getDisplayNameFromEnumName(skillName) || skillName;
+                            return (
+                                <Tag
+                                    key={index}
+                                    size="md"
+                                    borderRadius="full"
+                                    variant="solid"
+                                    colorScheme="blue"
+                                    m={1}
+                                >
+                                    <TagLabel>{displayName}</TagLabel>
+                                    <TagCloseButton
+                                        onClick={() => handleDeleteSkill(skillName)}
+                                        isDisabled={isLoading}
+                                    />
+                                </Tag>
+                            );
+                        })}
+                    </Flex>
+                </Box>
+            )}
 
             {isOpen && !isLoading && (
                 <Box
@@ -413,35 +461,6 @@ const SkillSelector: React.FC<SkillSelectorProps> = ({
                     </VStack>
                 </Box>
             )}
-
-            {/* 선택된 기술 표시 */}
-            <Flex flexWrap="wrap" gap={2} mt={4}>
-                {selectedSkills.map((skillName, index) => {
-                    // Enum 이름에서 표시 이름 가져오기
-                    const displayName = getDisplayNameFromEnumName(skillName) || skillName;
-
-                    return (
-                        <Tag
-                            key={index}
-                            colorScheme="blue"
-                            size="lg"
-                            borderRadius="full"
-                        >
-                            <Box px={1}>{displayName}</Box>
-                            <IconButton
-                                icon={<FaTrash/>}
-                                size="xs"
-                                colorScheme="blue"
-                                variant="ghost"
-                                ml={1}
-                                onClick={() => onSkillsChange(selectedSkills.filter(s => s !== skillName))}
-                                aria-label={`Remove ${displayName}`}
-                                isDisabled={isLoading}
-                            />
-                        </Tag>
-                    );
-                })}
-            </Flex>
         </Box>
     );
 };

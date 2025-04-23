@@ -36,7 +36,7 @@ const ResumeTab: React.FC<ResumeTabProps> = ({
                                                  onPortfolioModalOpen,
                                                  onDeletePortfolio
                                              }) => {
-    const {updateSkills, getSkills, isLoading} = useProfile();
+    const {updateSkills, getSkills, deleteSkill, isLoading} = useProfile();
     const toast = useToast();
     const [isSkillsLoading, setIsSkillsLoading] = useState(false);
     const [skills, setSkills] = useState<string[]>([]);
@@ -109,6 +109,19 @@ const ResumeTab: React.FC<ResumeTabProps> = ({
         }
     };
 
+    // 개별 기술 스택 삭제 핸들러
+    const handleDeleteSkill = async (skillToDelete: string) => {
+        try {
+            const success = await deleteSkill(skillToDelete);
+            if (success) {
+                // ProfileContext의 상태 업데이트와 별개로 로컬 상태도 업데이트
+                setSkills(prevSkills => prevSkills.filter(skill => skill !== skillToDelete));
+            }
+        } catch (error) {
+            console.error('기술 스택 삭제 실패:', error);
+        }
+    };
+
     return (
         <SimpleGrid columns={{base: 1, lg: 3}} spacing={8}>
             <GridItem colSpan={{base: 1, lg: 2}}>
@@ -133,6 +146,7 @@ const ResumeTab: React.FC<ResumeTabProps> = ({
                             <SkillSelector
                                 selectedSkills={skills} // 로컬 상태의 스킬 사용
                                 onSkillsChange={handleSkillsChange}
+                                onDeleteSkill={handleDeleteSkill}
                                 isLoading={isLoading}
                             />
                         )}

@@ -32,6 +32,7 @@ interface ProfileContextType {
     updateBio: (bio: string) => Promise<any>;
     updateSkills: (skills: string[]) => Promise<any>;
     getSkills: () => Promise<string[]>;
+    deleteSkill: (skill: string) => Promise<boolean>;
 }
 
 // 기본값으로 사용할 빈 컨텍스트 생성
@@ -48,6 +49,7 @@ const ProfileContext = createContext<ProfileContextType>({
     updateSkills: async () => {
     },
     getSkills: async () => [],
+    deleteSkill: async () => false,
 });
 
 // 컨텍스트 훅 생성
@@ -276,6 +278,56 @@ export const ProfileProvider = ({children}: { children: ReactNode }) => {
         }
     };
 
+    // 기술 스택 삭제 함수
+    const deleteSkill = async (skill: string) => {
+        setIsLoading(true);
+        try {
+            // 기술 스택 삭제 API 호출
+            await api.delete(`/api/v1/resumes/skills/${skill}`, {
+                withCredentials: true
+            });
+
+            // 프로필 정보 업데이트 (삭제된 기술 스택 제외)
+            setProfile(prevProfile => {
+                if (!prevProfile) return null;
+
+                // 삭제된 기술 스택을 필터링하여 새 배열 생성
+                const updatedSkills = prevProfile.skills?.filter(s => s !== skill) || [];
+                console.log('삭제 후 남은 기술 스택:', updatedSkills);
+
+                return {
+                    ...prevProfile,
+                    skills: updatedSkills
+                };
+            });
+
+            // 추가: 상태 업데이트 후 콜백 함수 실행 (옵션)
+            setTimeout(() => {
+                console.log('현재 프로필 상태:', profile);
+            }, 0);
+
+            toast({
+                title: '기술 스택이 삭제되었습니다.',
+                status: 'success',
+                duration: 3000,
+                isClosable: true,
+            });
+
+            return true;
+        } catch (error) {
+            console.error('기술 스택 삭제 오류:', error);
+            toast({
+                title: '기술 스택 삭제에 실패했습니다.',
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+            });
+            throw error;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     // 컨텍스트 값
     const value = {
         profile,
@@ -286,6 +338,7 @@ export const ProfileProvider = ({children}: { children: ReactNode }) => {
         updateBio,
         updateSkills,
         getSkills,
+        deleteSkill,
     };
 
     return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>;
