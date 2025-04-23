@@ -11,7 +11,8 @@ export interface Profile {
     userRole: 'ROLE_CLIENT' | 'ROLE_FREELANCER';
     imageUrl: string;
     email: string;
-    bio?: string; // bio 필드 추가
+    bio?: string;
+    skills?: string[];
 }
 
 // 프로필 업데이트 데이터 타입 정의
@@ -29,6 +30,8 @@ interface ProfileContextType {
     uploadProfileImage: (file: File) => Promise<void>;
     refreshProfile: () => Promise<Profile | null>;
     updateBio: (bio: string) => Promise<any>;
+    updateSkills: (skills: string[]) => Promise<any>;
+    getSkills: () => Promise<string[]>;
 }
 
 // 기본값으로 사용할 빈 컨텍스트 생성
@@ -42,6 +45,9 @@ const ProfileContext = createContext<ProfileContextType>({
     refreshProfile: async () => null,
     updateBio: async () => {
     },
+    updateSkills: async () => {
+    },
+    getSkills: async () => [],
 });
 
 // 컨텍스트 훅 생성
@@ -203,6 +209,73 @@ export const ProfileProvider = ({children}: { children: ReactNode }) => {
         }
     };
 
+    // 기술 스택 업데이트 함수
+    const updateSkills = async (skills: string[]) => {
+        setIsLoading(true);
+
+        try {
+            // 기술 스택 업데이트 API 호출
+            const response = await api.put('/api/v1/resumes/skills', {skills}, {
+                withCredentials: true
+            });
+
+            if (response.data) {
+                // 프로필 정보 업데이트 성공 시 상태 업데이트
+                setProfile(prevProfile => {
+                    if (!prevProfile) return null;
+                    return {...prevProfile, skills};
+                });
+
+                toast({
+                    title: '기술 스택이 성공적으로 업데이트되었습니다.',
+                    status: 'success',
+                    duration: 3000,
+                    isClosable: true,
+                });
+
+                return response.data;
+            }
+        } catch (error) {
+            console.error('기술 스택 업데이트 오류:', error);
+            toast({
+                title: '기술 스택 업데이트에 실패했습니다.',
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+            });
+            throw error;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // 기술 스택 조회 함수
+    const getSkills = async () => {
+        setIsLoading(true);
+        try {
+            const response = await api.get('/api/v1/resumes/skills', {
+                withCredentials: true
+            });
+
+            if (response.data && Array.isArray(response.data.skills)) {
+                return response.data.skills;
+            }
+            return [];
+        } catch (error) {
+            console.error('기술 스택 조회 오류:', error);
+            toast({
+                title: '기술 스택 조회에 실패했습니다.',
+                description: '서버 연결을 확인해주세요.',
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+            });
+            return [];
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     // 컨텍스트 값
     const value = {
         profile,
@@ -211,6 +284,8 @@ export const ProfileProvider = ({children}: { children: ReactNode }) => {
         uploadProfileImage,
         refreshProfile,
         updateBio,
+        updateSkills,
+        getSkills,
     };
 
     return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>;

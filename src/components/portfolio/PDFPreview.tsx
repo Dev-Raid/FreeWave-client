@@ -18,7 +18,7 @@ interface DocumentLoadSuccess {
 }
 
 const PDFPreview: React.FC<PDFPreviewProps> = ({file, width = 300}) => {
-    const [numPages, setNumPages] = useState<number | null>(null);
+    const [, setNumPages] = useState<number | null>(null);
 
     function onDocumentLoadSuccess({numPages}: DocumentLoadSuccess): void {
         setNumPages(numPages);

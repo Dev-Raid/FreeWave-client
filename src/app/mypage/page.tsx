@@ -346,7 +346,7 @@ const MyPage: React.FC = () => {
     // 이력서 상태 초기화 부분 수정
     const [resume, setResume] = useState<Resume>({
         bio: '', // 초기값은 빈 문자열로 설정
-        skills: ['React', 'TypeScript', 'UI/UX', 'Figma', 'Next.js'],
+        skills: [],
         newSkill: '',
         portfolios: portfolioItems,
         newPortfolio: {
@@ -420,7 +420,7 @@ const MyPage: React.FC = () => {
         return () => {
             isLoading = true; // 컴포넌트가 리렌더링되면 이전 요청을 무시
         };
-    }, [isAuthenticated, profile]);
+    }, [isAuthenticated, profile, refreshProfile]);
 
     // 탭 변경 핸들러
     const handleTabChange = (index: number): void => {
