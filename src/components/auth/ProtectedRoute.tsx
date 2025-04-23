@@ -3,7 +3,7 @@
 import {useEffect, useState} from 'react';
 import {useRouter} from 'next/navigation';
 import {useAuth} from '@/contexts/AuthContext';
-import {Box, Center, Spinner} from '@chakra-ui/react';
+import {Center, Spinner} from '@chakra-ui/react';
 
 interface ProtectedRouteProps {
     children: React.ReactNode;
