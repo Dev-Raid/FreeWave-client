@@ -1,87 +1,82 @@
 'use client';
 
 import React from 'react';
-import {Box, Heading, Text, Flex, Badge, Button, IconButton} from '@chakra-ui/react';
-import {FaLink, FaTrash} from 'react-icons/fa';
+import { Box, Heading, Text, Button, IconButton, Flex } from '@chakra-ui/react';
+import { FaTrash, FaEye } from 'react-icons/fa';
 import dynamic from 'next/dynamic';
 
 // PDFPreview 컴포넌트를 dynamic import로 가져오기
-const PDFPreview = dynamic(() => import('../portfolio/PDFPreview'), {
+const PDFPreview = dynamic(() => import('./PDFPreview'), {
     ssr: false,
 });
 
+// 인터페이스 정의
 interface PortfolioCardProps {
     portfolio: {
         id: number;
         title: string;
         description: string;
         pdfFile: File | string;
-        link: string;
-        tags: string[];
     };
-    onDelete: (id: number) => void;
+    onDelete: (id: number) => Promise<boolean>;
+    onView?: (id: number) => void;
 }
 
-const PortfolioCard: React.FC<PortfolioCardProps> = ({portfolio, onDelete}) => {
+const PortfolioCard: React.FC<PortfolioCardProps> = ({
+                                                         portfolio,
+                                                         onDelete,
+                                                         onView
+                                                     }) => {
+    const handleDelete = async () => {
+        if (window.confirm('정말로 이 포트폴리오를 삭제하시겠습니까?')) {
+            await onDelete(portfolio.id);
+        }
+    };
+
     return (
         <Box
             borderWidth="1px"
             borderRadius="lg"
             overflow="hidden"
-            boxShadow="sm"
-            transition="transform 0.2s"
-            _hover={{transform: 'translateY(-4px)', boxShadow: 'md'}}
+            p={4}
+            boxShadow="md"
+            transition="transform 0.3s, box-shadow 0.3s"
+            _hover={{ transform: 'translateY(-5px)', boxShadow: 'lg' }}
         >
-            <Box
-                h="200px"
-                position="relative"
-                overflow="hidden"
-                bg="gray.100"
-            >
-                <PDFPreview file={portfolio.pdfFile} width={300}/>
-                <Flex
-                    position="absolute"
-                    top={2}
-                    right={2}
-                    gap={2}
+            <Flex justifyContent="space-between" alignItems="center" mb={2}>
+                <Heading as="h3" size="md" noOfLines={1}>
+                    {portfolio.title}
+                </Heading>
+                <IconButton
+                    icon={<FaTrash />}
+                    aria-label="Delete portfolio"
+                    size="sm"
+                    colorScheme="red"
+                    variant="ghost"
+                    onClick={handleDelete}
+                />
+            </Flex>
+
+            <Box mb={4} height="150px" overflow="hidden">
+                <PDFPreview file={portfolio.pdfFile} width={250} />
+            </Box>
+
+            <Text noOfLines={2} mb={3}>
+                {portfolio.description}
+            </Text>
+
+            {onView && (
+                <Button
+                    leftIcon={<FaEye />}
+                    size="sm"
+                    colorScheme="teal"
+                    variant="outline"
+                    onClick={() => onView(portfolio.id)}
+                    width="full"
                 >
-                    <IconButton
-                        icon={<FaTrash/>}
-                        aria-label="Delete portfolio"
-                        size="sm"
-                        colorScheme="red"
-                        onClick={() => onDelete(portfolio.id)}
-                    />
-                </Flex>
-            </Box>
-            <Box p={4}>
-                <Heading size="md" mb={2}>{portfolio.title}</Heading>
-                <Text fontSize="sm" color="gray.600" mb={3} noOfLines={2}>
-                    {portfolio.description}
-                </Text>
-                <Flex flexWrap="wrap" gap={2} mb={3}>
-                    {portfolio.tags.map((tag, idx) => (
-                        <Badge key={idx} colorScheme="blue" variant="subtle">
-                            {tag}
-                        </Badge>
-                    ))}
-                </Flex>
-                {portfolio.link && (
-                    <Button
-                        as="a"
-                        href={portfolio.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        size="sm"
-                        leftIcon={<FaLink/>}
-                        colorScheme="blue"
-                        variant="outline"
-                        width="full"
-                    >
-                        작업물 보기
-                    </Button>
-                )}
-            </Box>
+                    상세보기
+                </Button>
+            )}
         </Box>
     );
 };
