@@ -8,6 +8,8 @@ import SkillSelector from '../common/SkillSelector';
 import PortfolioCard from "@/components/portfolio/PortfolioCard";
 import {useProfile} from '@/contexts/ProfileContext';
 import {useToast} from '@chakra-ui/react';
+import PortfolioSection from "@/components/portfolio/PortfolioSection";
+import {PortfolioProvider} from "@/contexts/PortfolioContext";
 
 interface Portfolio {
     id: number;
@@ -153,28 +155,9 @@ const ResumeTab: React.FC<ResumeTabProps> = ({
                     </Box>
 
                     {/* 포트폴리오 */}
-                    <Box bg="white" p={6} borderRadius="md" boxShadow="sm">
-                        <Flex justify="space-between" align="center" mb={6}>
-                            <Heading size="md">포트폴리오</Heading>
-                            <Button
-                                leftIcon={<FaPlus/>}
-                                colorScheme="blue"
-                                onClick={onPortfolioModalOpen}
-                            >
-                                추가하기
-                            </Button>
-                        </Flex>
-
-                        <SimpleGrid columns={{base: 1, md: 2}} spacing={6}>
-                            {resume.portfolios.map((portfolio) => (
-                                <PortfolioCard
-                                    key={portfolio.id}
-                                    portfolio={portfolio}
-                                    onDelete={onDeletePortfolio}
-                                />
-                            ))}
-                        </SimpleGrid>
-                    </Box>
+                    <PortfolioProvider>
+                        <PortfolioSection />
+                    </PortfolioProvider>
                 </VStack>
             </GridItem>
 

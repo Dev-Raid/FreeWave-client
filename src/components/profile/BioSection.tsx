@@ -82,7 +82,7 @@ const BioSection: React.FC<BioSectionProps> = ({bio, onBioChange}) => {
                 />
             ) : (
                 <Text whiteSpace="pre-wrap">
-                    {localBio || '자기소개가 없습니다. 자신을 소개해보세요!'}
+                    {localBio}
                 </Text>
             )}
         </Box>
